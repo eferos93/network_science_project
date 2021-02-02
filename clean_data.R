@@ -13,21 +13,19 @@ unclean_data <-
 
 data_as_vector <- scan(text=unclean_data, what='', sep='\n', skip = 41)
 data_as_vector <- data_as_vector[!grepl("^#", data_as_vector)]
-nodes <- data_as_vector[grepl("^Year", data_as_vector)] %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = 'Year ', '')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '\"', ' ')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '^\\s+', '')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '\\s+$', '')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '\\s+', ', ')}, USE.NAMES = FALSE) %>%
-  str_c(collapse = '\n')
 
-edges <- data_as_vector[grepl("^Cite", data_as_vector)] %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = 'Cite ', '')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '\"', ' ')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '^\\s+', '')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '\\s+$', '')}, USE.NAMES = FALSE) %>%
-  sapply(FUN = function (row) {str_replace_all(row, pattern = '\\s+', ', ')}, USE.NAMES = FALSE) %>%
+remove_spaces_and_quotes <- function(data_as_vector, nodes_or_edges) {
+  data_as_vector[grepl(paste0("^", nodes_or_edges), data_as_vector)] %>%
+  sapply(FUN = function(row) { str_replace_all(row, pattern = paste0(nodes_or_edges, ' '), '') }, USE.NAMES = FALSE) %>%
+  sapply(FUN = function(row) { str_replace_all(row, pattern = '\"', ' ') }, USE.NAMES = FALSE) %>%
+  sapply(FUN = function(row) { str_replace_all(row, pattern = '^\\s+', '') }, USE.NAMES = FALSE) %>%
+  sapply(FUN = function(row) { str_replace_all(row, pattern = '\\s+$', '') }, USE.NAMES = FALSE) %>%
+  sapply(FUN = function(row) { str_replace_all(row, pattern = '\\s+', ', ') }, USE.NAMES = FALSE) %>%
   str_c(collapse = '\n')
+}
+
+nodes <- remove_spaces_and_quotes(data_as_vector, 'Year')
+edges <- remove_spaces_and_quotes(data_as_vector, 'Cite')
 
 
 
