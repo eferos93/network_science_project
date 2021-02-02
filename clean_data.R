@@ -20,12 +20,18 @@ remove_spaces_and_quotes <- function(data_as_vector, nodes_or_edges) {
   sapply(FUN = function(row) { str_replace_all(row, pattern = '\"', ' ') }, USE.NAMES = FALSE) %>%
   sapply(FUN = function(row) { str_replace_all(row, pattern = '^\\s+', '') }, USE.NAMES = FALSE) %>%
   sapply(FUN = function(row) { str_replace_all(row, pattern = '\\s+$', '') }, USE.NAMES = FALSE) %>%
-  sapply(FUN = function(row) { str_replace_all(row, pattern = '\\s+', ', ') }, USE.NAMES = FALSE) %>%
-  str_c(collapse = '\n')
+  sapply(FUN = function(row) { str_replace_all(row, pattern = '\\s+', ', ') }, USE.NAMES = FALSE) #%>%
 }
 
 nodes <- remove_spaces_and_quotes(data_as_vector, 'Year')
 edges <- remove_spaces_and_quotes(data_as_vector, 'Cite')
 
+nodes_tibble <- tibble(
+  programming_language = sapply(nodes, FUN = function (row) { str_extract(row, pattern = '^\\w+') }, USE.NAMES = FALSE),
+  year = sapply(nodes, FUN = function (row) { str_extract(row, pattern = '\\w+$') }, USE.NAMES = FALSE)
+)
 
-
+edges_tibble <- tibble(
+  is_influenced = sapply(edges, FUN = function (row) { str_extract(row, pattern = '^\\w+') }, USE.NAMES = FALSE),
+  by = sapply(edges, FUN = function (row) { str_extract(row, pattern = '\\w+$') }, USE.NAMES = FALSE)
+)
