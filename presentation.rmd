@@ -1,0 +1,46 @@
+---
+title: "An analysis on the influences between programming languages"
+author: Eros Fabrici
+date: 05/02/21
+output: ioslides_presentation
+---
+
+# First section
+
+## First slide
+
+
+## Second slide
+
+Type any R code in the chunk and check the result:
+
+```{r, echo = FALSE}
+source('clean_data.R')
+library(tidyverse)
+library(igraph)
+library(ggraph)
+library(tidygraph)
+
+graph <- tbl_graph(nodes = programming_languages_tibble,
+                   edges = influences_tibble, directed = TRUE)
+```
+```{r, echo = FALSE}
+centraility <- graph %>%
+        activate(nodes) %>%
+        mutate(degree = centrality_degree(mode = 'in')) %>%
+        filter(degree > 0) %>%
+        arrange(-degree)
+
+centraility %>% ggraph(layout = 'fr') +
+  geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE) +
+  geom_node_point(aes(size = degree), show.legend = FALSE) +
+  geom_node_text(aes(label = name, color = 'blue'), show.legend = FALSE)
+
+
+```
+# Second section
+
+## Third slide
+
+Now, click the **Run** button on the chunk toolbar to [execute](https://www.jetbrains.com/help/pycharm/r-markdown.html#run-r-code) the chunk code. The result should be placed under the chunk.
+Click the **Knit and Open Document** to built and preview an output.
