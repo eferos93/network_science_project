@@ -19,25 +19,25 @@ remove_spaces_and_quotes <- function(data_as_vector, nodes_or_edges) {
   sapply(FUN = function(line) { str_replace_all(line, pattern = '\"', '') }, USE.NAMES = FALSE) %>%
   sapply(FUN = function(line) { str_replace_all(line, pattern = '^\\s+', '') }, USE.NAMES = FALSE) %>%
   sapply(FUN = function(line) { str_replace_all(line, pattern = '\\s+$', '') }, USE.NAMES = FALSE) %>%
-  sapply(FUN = function(line) { str_replace_all(line, pattern = '\\s+', ', ') }, USE.NAMES = FALSE)
+  sapply(FUN = function(line) { str_replace_all(line, pattern = '\\s+', ' ') }, USE.NAMES = FALSE)
 }
 
 nodes <- remove_spaces_and_quotes(data_as_vector, 'Year')
 edges <- remove_spaces_and_quotes(data_as_vector, 'Cite')
 
 programming_languages_tibble <- tibble(
-  name = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '^\\w+') }, USE.NAMES = FALSE),
-  year = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '\\w+$') }, USE.NAMES = FALSE)
+  name = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '^\\S+') }, USE.NAMES = FALSE),
+  year = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '\\S+$') }, USE.NAMES = FALSE)
 )
 
 influences_tibble <- tibble(
   #is influenced
-  from = sapply(edges, FUN = function (line) { str_extract(line, pattern = '^\\w+') }, USE.NAMES = FALSE),
+  from = sapply(edges, FUN = function (line) { str_extract(line, pattern = '^\\S+') }, USE.NAMES = FALSE),
   #by
-  to = sapply(edges, FUN = function (line) { str_extract(line, pattern = '\\w+$') }, USE.NAMES = FALSE)
+  to = sapply(edges, FUN = function (line) { str_extract(line, pattern = '\\S+$') }, USE.NAMES = FALSE)
 )
 
-# rm(edges)
-# rm(nodes)
-# rm(data_as_vector)
-# rm(unclean_data)
+rm(edges)
+rm(nodes)
+rm(data_as_vector)
+rm(unclean_data)
