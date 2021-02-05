@@ -9,7 +9,7 @@ library(stringr)
 
 
 unclean_data <-
-  pdf_text("https://royalsocietypublishing.org/action/downloadSupplement?doi=10.1098%2Frsif.2015.0249&file=rsif20150249supp1.pdf")
+  pdf_text("data/rsif20150249supp1.pdf")
 
 data_as_vector <- scan(text=unclean_data, what=character(0), sep='\n', skip = 41)
 data_as_vector <- data_as_vector[!grepl("^#", data_as_vector)]
