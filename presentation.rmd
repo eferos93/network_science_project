@@ -25,18 +25,79 @@ graph <- tbl_graph(nodes = programming_languages_tibble,
                    edges = influences_tibble, directed = TRUE)
 ```
 ```{r, echo = FALSE}
-centraility <- graph %>%
-        activate(nodes) %>%
-        mutate(degree = centrality_degree(mode = 'in')) %>%
-        filter(degree > 0) %>%
-        arrange(-degree)
+get_centrality <- function (graph, centrality_function, filtering_degree) {
+  result_centraility <-
+          graph %>%
+          activate(nodes) %>%
+          mutate(influence = centrality_function) %>%
+          filter(influence > filtering_degree)
+  return(result_centraility)
+}
 
-centraility %>% ggraph(layout = 'fr') +
-  geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE) +
-  geom_node_point(aes(size = degree), show.legend = FALSE) +
-  geom_node_text(aes(label = name, color = 'blue'), show.legend = FALSE)
+plot_centrality <- function (graph_with_centrality) {
+  graph_with_centrality %>%
+          ggraph(layout = 'fr') +
+          geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
+          geom_node_point(aes(size = influence), show.legend = FALSE) +
+          geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
+          theme_void()
+}
+
+plot_most_influent_languages <- function (graph_with_centraility, how_many = 10) {
+  as_data_frame(graph_with_centraility, what = 'vertices') %>%
+          as_tibble() %>%
+          top_n(how_many) %>%
+          select(name, influence) %>%
+          ggplot(aes(x = reorder(as.factor(name), -influence), y = influence)) +
+          geom_bar(stat = 'identity')
+}
+
+subgraph_of_programming_language <- function (graph, programming_language,
+                                              selected_mode = 'all') {
+  subgraph <- graph %>%
+          convert(to_bfs_tree,
+                  which(.N()$name == programming_language),
+                  mode = selected_mode)
+  subgraph %>%
+          ggraph(layout = 'fr') +
+          geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
+          geom_node_point(aes(size = influence), show.legend = FALSE) +
+          geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
+          geom_node_text(mapping = aes(filter = name == programming_language, label = name),
+                         colour = 'green', family = 'serif', repel = TRUE, show.legend = FALSE) +
+          theme_void()
+}
 
 
+graph_influence_degree <- get_centrality(graph, centrality_degree(mode = 'in'), 0)
+plot_centrality(graph_influence_degree)
+plot_most_influent_languages(graph_influence_degree)
+```
+```{r}
+graph_closeness_centrality <- get_centrality(graph, centrality_closeness(mode = 'in'), 0)
+plot_centrality(graph_closeness_centrality)
+plot_most_influent_languages(graph_closeness_centrality)
+```
+```{r}
+graph_edge_betweenness <- get_centrality(graph, centrality_betweenness(), 0)
+plot_centrality(graph_edge_betweenness)
+plot_most_influent_languages(graph_edge_betweenness)
+```
+```{r}
+subgraph_of_programming_language(graph_edge_betweenness, 'python')
+subgraph_of_programming_language(graph_edge_betweenness, 'ruby')
+subgraph_of_programming_language(graph_edge_betweenness, 'ml')
+subgraph_of_programming_language(graph_edge_betweenness, 'c')
+```
+```{r}
+graph_authority <- get_centrality(graph, centrality_authority(), 0)
+plot_centrality(graph_authority)
+plot_most_influent_languages(graph_authority)
+```
+```{r}
+graph_hub <- get_centrality(graph, centrality_hub(), 0)
+plot_centrality(graph_hub)
+plot_most_influent_languages(graph_hub)
 ```
 # Second section
 
