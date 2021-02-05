@@ -25,12 +25,14 @@ remove_spaces_and_quotes <- function(data_as_vector, nodes_or_edges) {
 nodes <- remove_spaces_and_quotes(data_as_vector, 'Year')
 edges <- remove_spaces_and_quotes(data_as_vector, 'Cite')
 
-nodes_tibble <- tibble(
+programming_languages_tibble <- tibble(
   programming_language = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '^\\w+') }, USE.NAMES = FALSE),
   year = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '\\w+$') }, USE.NAMES = FALSE)
 )
 
-edges_tibble <- tibble(
-  is_influenced = sapply(edges, FUN = function (line) { str_extract(line, pattern = '^\\w+') }, USE.NAMES = FALSE),
-  by = sapply(edges, FUN = function (line) { str_extract(line, pattern = '\\w+$') }, USE.NAMES = FALSE)
+influences_tibble <- tibble(
+  #is influenced
+  from = sapply(edges, FUN = function (line) { str_extract(line, pattern = '^\\w+') }, USE.NAMES = FALSE),
+  #by
+  to = sapply(edges, FUN = function (line) { str_extract(line, pattern = '\\w+$') }, USE.NAMES = FALSE)
 )
