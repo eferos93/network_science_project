@@ -43,13 +43,19 @@ plot_centrality <- function (graph_with_centrality) {
           theme_void()
 }
 
-plot_most_influent_languages <- function (graph_with_centraility, how_many = 10) {
+plot_most_influent_languages <- function (graph_with_centraility, how_many = 10, centrality_metric) {
   as_data_frame(graph_with_centraility, what = 'vertices') %>%
-          as_tibble() %>%
           top_n(how_many) %>%
           select(name, influence) %>%
           ggplot(aes(x = reorder(as.factor(name), -influence), y = influence)) +
-          geom_bar(stat = 'identity')
+          geom_bar(stat = 'identity', fill = 'blue4') +
+          labs(
+                  title = 'Top ten most influential programming languages',
+                  subtitle = paste('Centrality metric used:', centrality_metric),
+                  x = '',
+                  y = 'Influence'
+          ) +
+          theme_classic()
 }
 
 subgraph_of_programming_language <- function (graph, programming_language,
@@ -62,8 +68,9 @@ subgraph_of_programming_language <- function (graph, programming_language,
           ggraph(layout = 'fr') +
           geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
           geom_node_point(aes(size = influence), show.legend = FALSE) +
-          geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
-          geom_node_text(mapping = aes(filter = name == programming_language, label = name),
+          geom_node_text(aes(filter = name != programming_language, label = name),
+                         repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
+          geom_node_text(aes(filter = name == programming_language, label = name),
                          colour = 'green', family = 'serif', repel = TRUE, show.legend = FALSE) +
           theme_void()
 }
@@ -71,17 +78,17 @@ subgraph_of_programming_language <- function (graph, programming_language,
 
 graph_influence_degree <- get_centrality(graph, centrality_degree(mode = 'in'), 0)
 plot_centrality(graph_influence_degree)
-plot_most_influent_languages(graph_influence_degree)
+plot_most_influent_languages(graph_influence_degree, centrality_metric = 'in-degree')
 ```
 ```{r}
 graph_closeness_centrality <- get_centrality(graph, centrality_closeness(mode = 'in'), 0)
 plot_centrality(graph_closeness_centrality)
-plot_most_influent_languages(graph_closeness_centrality)
+plot_most_influent_languages(graph_closeness_centrality, centrality_metric = 'closeness')
 ```
 ```{r}
 graph_edge_betweenness <- get_centrality(graph, centrality_betweenness(), 0)
 plot_centrality(graph_edge_betweenness)
-plot_most_influent_languages(graph_edge_betweenness)
+plot_most_influent_languages(graph_edge_betweenness, centrality_metric = 'betweenness')
 ```
 ```{r}
 subgraph_of_programming_language(graph_edge_betweenness, 'python')
