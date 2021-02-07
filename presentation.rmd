@@ -131,9 +131,30 @@ graph %>%
         subgraph_of_programming_language(programming_language = 'java', selected_mode = 'out')
 ```
 ```{r}
-graph_no_isolated_nodes <- graph %>% activate(nodes) %>% filter(!node_is_isolated())
-clusters <- cluster_infomap(graph_no_isolated_nodes, modularity = FALSE)
-plot(clusters, graph_no_isolated_nodes, layout = layout_with_fr(graph_no_isolated_nodes))
+graph_no_isolated_nodes <- graph %>%
+        activate(nodes) %>%
+        mutate(influence = centrality_degree(mode = 'in')) %>%
+        filter(!node_is_isolated()) %>%
+        filter(influence > 0)
+        #clusters <- cluster_infomap(graph_no_isolated_nodes, modularity = FALSE)
+# plot(clusters, graph_no_isolated_nodes, layout = layout_with_fr(graph_no_isolated_nodes))
+
+clustered <- graph_no_isolated_nodes %>%
+        activate(nodes) %>%
+        filter(!node_is_isolated()) %>%
+        mutate(group = group_infomap() %>%  as.factor())
+clustered %>% as_data_frame(what = 'vertices') %>% as_tibble() %>% select(group) %>% distinct() %>% count()
+
+clustered %>%
+        ggraph(layout = 'fr') +
+        geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
+        geom_node_point(aes(colour = group), show.legend = FALSE) +
+        geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
+        theme_void()
+
+clusters <- fastgreedy.community(graph_no_isolated_nodes)
+weights <- ifelse(crossing(clusters, graph_no_isolated_nodes), 1 , 100)
+plot(graph_no_isolated_nodes, layout = layout_with_kk(graph_no_isolated_nodes, weights = weights))
 ```
 
 
