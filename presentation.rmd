@@ -14,6 +14,8 @@ source('clean_data.R')
 library(tidyverse)
 library(igraph)
 library(ggraph)
+library(devtools)
+install_github('eferos93/tidygraph')
 library(tidygraph)
 
 graph <- tbl_graph(nodes = programming_languages_tibble,
@@ -40,7 +42,7 @@ plot_centrality <- function (graph_with_centrality, filtering_degree = 0) {
 }
 
 plot_most_influent_languages <- function (graph_with_centraility, how_many = 10, centrality_metric) {
-  as_data_frame(graph_with_centraility, what = 'vertices') %>%
+  as_tibble(graph_with_centraility, what = 'vertices') %>%
           top_n(how_many) %>%
           select(name, influence) %>%
           ggplot(aes(x = reorder(as.factor(name), -influence), y = influence)) +
@@ -131,32 +133,40 @@ graph %>%
         subgraph_of_programming_language(programming_language = 'java', selected_mode = 'out')
 ```
 ```{r}
-graph_no_isolated_nodes <- graph %>%
-        activate(nodes) %>%
-        mutate(influence = centrality_degree(mode = 'in')) %>%
-        filter(!node_is_isolated()) %>%
-        filter(influence > 0)
-        #clusters <- cluster_infomap(graph_no_isolated_nodes, modularity = FALSE)
-# plot(clusters, graph_no_isolated_nodes, layout = layout_with_fr(graph_no_isolated_nodes))
+get_clusters <- function (graph, centrality_function, clustering_function) {
+  graph_no_isolated_nodes <- graph %>%
+          activate(nodes) %>%
+          mutate(influence = centrality_function) %>%
+          filter(!node_is_isolated()) %>%
+          filter(influence > 0)
 
-clustered <- graph_no_isolated_nodes %>%
-        activate(nodes) %>%
-        filter(!node_is_isolated()) %>%
-        mutate(group = group_infomap() %>%  as.factor())
-clustered %>% as_data_frame(what = 'vertices') %>% as_tibble() %>% select(group) %>% distinct() %>% count()
-
-clustered %>%
-        ggraph(layout = 'fr') +
-        geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
-        geom_node_point(aes(colour = group), show.legend = FALSE) +
-        geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
-        theme_void()
-
-clusters <- fastgreedy.community(graph_no_isolated_nodes)
-weights <- ifelse(crossing(clusters, graph_no_isolated_nodes), 1 , 100)
-plot(graph_no_isolated_nodes, layout = layout_with_kk(graph_no_isolated_nodes, weights = weights))
+  clustered <- graph_no_isolated_nodes %>%
+          activate(nodes) %>%
+          mutate(group = clustering_function %>%  as.factor())
+  return(clustered)
+}
+  plot_clusters <-  function(clustered, centrality_function_name, clustering_fuction_name, groups = NULL) {
+    if(!is.null(groups)) {
+      clustered <- clustered %>% filter(group %in% groups)
+    }
+  clustered %>%
+          ggraph(layout = 'fr') +
+          geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
+          geom_node_point(aes(colour = group, size = influence), show.legend = FALSE) +
+          geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'black', family = 'serif') +
+          facet_nodes(~group) +
+          labs(
+                  title = 'Community detection',
+                  subtitle = paste0('Centrality metric used to filter nodes: ', centrality_function_name,
+                                    '. Clustering algorithm used: ', clustering_fuction_name)
+          ) +
+          theme_graph()
+}
 ```
-
+```{r}
+get_clusters(graph, centrality_pagerank(), group_infomap()) %>% plot_clusters('pagerank', 'infomap', 1:8)
+get_clusters(graph, centrality_betweenness(), group_infomap()) %>% plot_clusters('betweenness', 'infomap', 1:8)
+```
 
 ## Third slide
 
