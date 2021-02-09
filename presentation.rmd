@@ -2,14 +2,60 @@
 title: "An analysis on the influences between programming languages"
 author: Eros Fabrici
 date: 05/02/21
-output: ioslides_presentation
+output:
+    ioslides_presentation
 ---
 
-## Influence
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo =FALSE, cache = TRUE, message = FALSE,
+                      warning = FALSE, fig.width = 7, fig.height = 7, fig.align = 'center')
+```
+<!-- Script for adding ToC !-->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  TableOfContents();
+}
+);
 
-Type any R code in the chunk and check the result:
+function TableOfContents(container, output) {
 
-```{r, echo = FALSE}
+var output = output || '#toc';
+
+// Get all elements with class: section or subsection
+idfromclass = document.querySelectorAll('.section');
+
+    // Create the list element:
+    var list = document.createElement('ul');
+
+    // Iterate through all found elements
+    for(var i = 0; i < idfromclass.length; i++) {
+
+        // Create the list item:
+        var item = document.createElement('li');
+
+        // Set its contents:
+        var id = idfromclass[i].id
+
+        // Replace - in id with whitespace
+        var titleText = id.replace(/-/gi, " ");
+
+        // Add text to list element
+        item.appendChild(document.createTextNode(titleText));
+
+        // Add it to the list:
+        list.appendChild(item);
+    }
+
+// Return generated HTML to toc div in slide
+document.querySelector(output).innerHTML = list.innerHTML;
+
+// Generate instruction message if no classes are defined
+if (idfromclass.length == 0) { document.querySelector(output).innerHTML = "Add {.section} or {.subsection} to slide name to generate TOC"; }
+
+};
+</script>
+
+```{r}
 source('clean_data.R')
 library(tidyverse)
 library(igraph)
@@ -17,11 +63,91 @@ library(ggraph)
 library(devtools)
 install_github('eferos93/tidygraph')
 library(tidygraph)
+library(tweenr)
 
 graph <- tbl_graph(nodes = programming_languages_tibble,
-                   edges = influences_tibble, directed = TRUE)
+                   edges = influences_tibble, directed = TRUE) %>%
+  activate(nodes) %>%
+  arrange(year)
 ```
-```{r, echo = FALSE}
+
+## Table of content
+
+<div id="toc"></div>
+
+
+# Introduction {.section}
+## Dataset
+* Dataset can be found in the [ICON](https://icon.colorado.edu/#!/) website
+* The dataset represents a directed graph, and it describes the influences between the programming languages released between 1952 and 2010
+* It has 395 nodes and 762 edges
+
+## The network
+```{r, eval = FALSE}
+# years <- graph %>%
+#  as_tibble(what = 'vertices') %>%
+#   select(year) %>%
+#   filter(!is.na(year)) %>%
+#   distinct() %>%
+#   arrange(year)
+# # year_tween <- tween_states(years, tweenlength = 1,
+# #                            statelength = 1, ease = 'cubic-in-out',
+# #                            nframes = length(years) * 16 + 8
+# # )
+# # title_transp <- tween_t(c(0, 1, 0, 0, 0), 16, 'cubic-in-out')[[1]]
+# anim_graph <- graph %>% activate(nodes) %>%  mutate(ease = 'linear')
+# year_tween <- tween_elements(anim_graph, time = 'year', group = 'ease',
+#                              ease = 'ease', nframes = 59 * 20)
+# graph_tween_appear <- tween_appear(year_tween, time = 'year', nframes = 59 * 20) %>% keep_state(20)
+#
+# plot_data <- graph_tween_appear %>% filter(.frame = i)
+# p <- ggraph(plot_data, layout = 'fr') +
+#   geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
+#   geom_node_point(show.legend = FALSE) +
+#   geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE,
+#                  colour = 'red', family = 'serif') +
+#   theme_graph()
+# plot(p)
+#
+# # for (i in seq_len(length(years) * 16)) {
+# #   years_to_plot <- 1952:year_tween[year_tween$.frame == i,]
+# #   filtered_graph <-
+# #     graph %>%
+# #       activate(nodes) %>%
+# #       filter(year %in% years_to_plot)
+# #   set.seed(10)
+# #   p <- ggraph(filtered_graph, layout = 'fr') +
+# #     geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
+# #     geom_node_point(show.legend = FALSE) +
+# #     geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
+# #     theme_graph()
+# #   plot(p)
+# # }
+```
+```{r}
+graph %>%
+  ggraph(layout = 'fr') +
+  geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
+  geom_node_point(show.legend = FALSE) +
+  geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
+  theme_graph()
+```
+
+## Questions
+* The aim of this project is to answer the following questions by analysing the network:
+    + What are the most influential programming languages?
+    + Which are the most influenced?
+    + Does the programming languages of the same paradigm family influence and get influenced between each other the most?
+    + Are the programming languages of the same paradigm family more influenced between each other rather than the others belonging to other paradigms?
+
+# Network Analysis {.section}
+## Most influential programming languages
+
+# Conclusions {.section}
+
+## References {.section}
+
+```{r, echo = FALSE, eval = FALSE}
 get_centrality <- function (graph, centrality_function) {
   result_centraility <-
           graph %>%
@@ -145,11 +271,11 @@ get_clusters <- function (graph, centrality_function, clustering_function) {
           mutate(group = clustering_function %>%  as.factor())
   return(clustered)
 }
-  plot_clusters <-  function(clustered, centrality_function_name, clustering_fuction_name, groups = NULL) {
+plot_clusters <-  function(clustered, centrality_function_name, clustering_fuction_name, groups = NULL) {
     if(!is.null(groups)) {
       clustered <- clustered %>% filter(group %in% groups)
     }
-  clustered %>%
+    clustered %>%
           ggraph(layout = 'fr') +
           geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
           geom_node_point(aes(colour = group, size = influence), show.legend = FALSE) +
@@ -166,6 +292,10 @@ get_clusters <- function (graph, centrality_function, clustering_function) {
 ```{r}
 get_clusters(graph, centrality_pagerank(), group_infomap()) %>% plot_clusters('pagerank', 'infomap', 1:8)
 get_clusters(graph, centrality_betweenness(), group_infomap()) %>% plot_clusters('betweenness', 'infomap', 1:8)
+```
+```{r}
+get_clusters(graph, centrality_closeness(), group_infomap()) %>% plot_clusters('closeness', 'infomap', 1:4)
+get_clusters(graph, centrality_betweenness(), group_infomap()) %>% plot_clusters('betweenness', 'infomap', 1:4)
 ```
 
 ## Third slide
