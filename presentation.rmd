@@ -8,7 +8,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo =FALSE, cache = TRUE, message = FALSE,
-                      warning = FALSE, fig.align = 'center', out.width = 1000, out.height = 550, fig.width = 10, fig.height = 8)
+                      warning = FALSE, fig.align = 'center', out.width = 1000, out.height = 550, fig.width = 9, fig.height = 7)
 ```
 <!-- Script for adding ToC !-->
 <script>
@@ -65,6 +65,7 @@ install_github('eferos93/tidygraph')
 library(tidygraph)
 library(tweenr)
 set_graph_style()
+
 graph <- tbl_graph(nodes = programming_languages_tibble,
                    edges = influences_tibble, directed = TRUE) %>%
   activate(nodes) %>%
