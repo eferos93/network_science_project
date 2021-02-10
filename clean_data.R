@@ -29,7 +29,8 @@ programming_languages_tibble <- tibble(
   name = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '^\\S+') }, USE.NAMES = FALSE),
   year = sapply(nodes, FUN = function (line) { str_extract(line, pattern = '\\S+$') }, USE.NAMES = FALSE) %>% as.numeric()
 ) %>% filter(!(name == 'refal' & year == 1966)) #removing refal of 1966 as there is another observation referring
-# to refal in 1968, which it is when the language was actually implemented and first appeared
+# to refal in 1968, which it is when the language was actually implemented and first appeared according to Wikipedia
+# https://en.wikipedia.org/wiki/Refal
 
 influences_tibble <- tibble(
   #is influenced
