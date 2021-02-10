@@ -63,7 +63,7 @@ library(ggraph)
 library(devtools)
 install_github('eferos93/tidygraph')
 library(tidygraph)
-library(tweenr)
+
 set_graph_style()
 
 graph <- tbl_graph(nodes = programming_languages_tibble,
