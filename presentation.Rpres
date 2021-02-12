@@ -23,11 +23,11 @@ Table of Content
 Data
 ========================================================
 
-* The [dataset](https://royalsocietypublishing.org/action/downloadSupplement?doi=10.1098%2Frsif.2015.0249&file=rsif20150249supp1.pdf) can be found in the [ICON](https://icon.colorado.edu/#!/) website
-* It represents a directed graph, which describes the influences between the programming languages released between 1952 and 2010
-* It has 395 nodes and 762 edges
-* It is not connected: there is 1 main weak component, other 5 weak components and 29 isolated nodes
-* The semantic is the following:
+- The [dataset](https://royalsocietypublishing.org/action/downloadSupplement?doi=10.1098%2Frsif.2015.0249&file=rsif20150249supp1.pdf) can be found in the [ICON](https://icon.colorado.edu/#!/) website
+- It represents a directed graph, which describes the influences between the programming languages released between 1952 and 2010
+- It has 395 nodes and 762 edges
+- It is not connected: there is 1 main weak component, other 5 weak components and 29 isolated nodes
+- The semantic is the following:
 Let $u, v \in V$ two programming languages (nodes) and if $\exists (u, v) \in E$ then this means that the programming language
 $u$ is influenced by $v$
 
@@ -41,7 +41,7 @@ knitr::include_graphics('plots/network.png')
 Questions
 ========================================================
 
-* The aim of this project is to answer the following questions by analysing the network:
+- The aim of this project is to answer the following questions by analysing the network:
     + What are the most influential programming languages?
     + Which are the most influenced?
     + Are the programming languages of the same paradigm family more influenced between each other rather than the others belonging to other paradigms?
@@ -51,8 +51,8 @@ Network Analysis
 ========================================================
 
 ## Most influential programming languages
-* In order to evaluate which are the most influential and influenced programming languages, we will use centrality metrics
-* The metrics shown for the first case are: in-degree, in-closeness, pagerank and betweenness
+- In order to evaluate which are the most influential and influenced programming languages, we will use centrality metrics
+- The metrics shown for the first case are: in-degree, in-closeness, pagerank and betweenness
 
 
 ========================================================
@@ -105,7 +105,7 @@ knitr::include_graphics('plots/hist_betweenness.png')
 Network Analysis (2)
 =======================================================
 ## Most Influenced Programming languages
-* Listed: out-degree
+- Listed: out-degree
 
 =======================================================
 ```{r}
@@ -121,10 +121,10 @@ knitr::include_graphics('plots/hist_degree_out.png')
 Network Analysis (3)
 =======================================================
 ## Community detection
-* In order to tackle the third objective of this project, community detection algorithms were used
-* The aim is to check if you can identify clusters that contain programming languages of the same/similar paradigm
-* Before analysing the network, isolated nodes were removed as well as nodes with a low centrality
-* Unfortunately, in igraph the modularity is implemented only for undirected graphs
+- In order to tackle the third objective of this project, community detection algorithms were used
+- The aim is to check if you can identify clusters that contain programming languages of the same/similar paradigm
+- Before analysing the network, isolated nodes were removed as well as nodes with a low centrality
+- Unfortunately, in igraph the modularity is implemented only for undirected graphs
     + In fact, hierarchical methods were not able to provide meaningful clusters
     + The algorithm that yield the best results is the infomap
     
@@ -146,6 +146,7 @@ knitr::include_graphics('plots/clusters_closeness_infomap.png')
 
 Conclusions
 =======================================================
+- 
 
 References
 =======================================================
