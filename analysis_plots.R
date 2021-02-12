@@ -110,39 +110,51 @@ graph %>% filter(!node_is_isolated()) %>%
   geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
   geom_node_point(show.legend = FALSE) +
   geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif')
+ggsave('plots/network.png')
 #------------------------------------------------------------------------------------------------
 
 # Centralities
 graph_influence_degree <- get_centrality(graph, centrality_degree(mode = 'in'))
 plot_centrality(graph_influence_degree, centrality_metric = 'in-degree')
+ggsave('plots/degree_in.png')
 plot_most_influent_languages(graph_influence_degree, centrality_metric = 'in-degree')
+ggsave('plots/hist_degree_in.png')
 
 graph_closeness_centrality <- get_centrality(graph, centrality_closeness(mode = 'in'))
 plot_centrality(graph_closeness_centrality, centrality_metric = 'in-closeness')
+ggsave('plots/closeness_in.png')
 plot_most_influent_languages(graph_closeness_centrality, centrality_metric = 'in-closeness')
+ggsave('plots/hist_closeness_in.png')
 
 graph_pagerank <- get_centrality(graph, centrality_pagerank())
 plot_centrality(graph_pagerank, centrality_metric = 'pagerank')
+ggsave('plots/pagerank.png')
 plot_most_influent_languages(graph_pagerank, centrality_metric = 'pagerank')
+ggsave('plots/hist_pagerank.png')
 
 graph_edge_betweenness <- get_centrality(graph, centrality_betweenness())
 plot_centrality(graph_edge_betweenness, centrality_metric = 'betweenness')
+ggsave('plots/betweenness.png')
 plot_most_influent_languages(graph_edge_betweenness, centrality_metric = 'betweenness')
+ggsave('plots/hist_betweenness.png')
 
 graph_influence_degree <- get_centrality(graph, centrality_degree(mode = 'out'))
 plot_centrality(graph_influence_degree, centrality_metric = 'out-degree')
-
+ggsave('plots/degree_out.png')
 plot_most_influent_languages(graph_influence_degree, centrality_metric = 'out-degree')
+ggsave('plots/hist_degree_out.png')
 #---------------------------------------------------------------------------------------------
 
 # Clustering
 get_clusters(graph, centrality_pagerank(), group_infomap()) %>%
   plot_clusters('pagerank', 'infomap', 1:8)
+ggsave('plots/cluster_pagerank_infomap')
 
 
 get_clusters(graph, centrality_betweenness(), group_infomap()) %>%
         plot_clusters('betweenness', 'infomap', 1:8)
-
+ggsave('plots/clusters_betweeness_infomap.png')
 
 get_clusters(graph, centrality_closeness(), group_infomap()) %>%
   plot_clusters('closeness', 'infomap', 1:4)
+ggsave('plots/clusters_closeness_infomap.png')
