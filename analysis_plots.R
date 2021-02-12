@@ -32,7 +32,8 @@ plot_centrality <- function (graph_with_centrality, filtering_degree = 0, centra
     geom_node_point(aes(size = influence), show.legend = FALSE) +
     geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
     labs(
-      subtitle = paste('Centrality metric:', centrality_metric)
+      title = 'Centrality',
+      subtitle = paste('Algorithm:', centrality_metric)
     ) +
     theme_void()
 }
@@ -85,12 +86,13 @@ plot_clusters <-  function(clustered, centrality_function_name, clustering_fucti
     clustered <- clustered %>% filter(group %in% groups)
   }
   clustered %>%
-    ggraph(layout = 'auto') +
+    ggraph(layout = 'fr') +
     geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
     geom_node_point(aes(colour = group), show.legend = FALSE) +
     geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'black', family = 'serif') +
     facet_nodes(~group) +
     labs(
+      title = 'Communities',
       subtitle = paste0('Centrality metric used to filter nodes: ', centrality_function_name,
                         '. Clustering algorithm used: ', clustering_fuction_name)
     ) +
@@ -131,6 +133,9 @@ p <- graph %>% filter(!node_is_isolated()) %>%
   geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
   geom_node_point(show.legend = FALSE) +
   geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
+  labs(
+    title = 'The network'
+  ) +
   theme_graph()
 
 plot_save(p, filename = 'plots/network.png')
@@ -170,12 +175,12 @@ plot_most_influent_languages(graph_influence_degree, centrality_metric = 'out-de
 
 # Clustering
 get_clusters(graph, centrality_pagerank(), group_infomap()) %>%
-  plot_clusters('pagerank', 'infomap', 1:8) %>%
+  plot_clusters('pagerank', 'infomap', 1:9) %>%
   plot_save(filename = 'plots/cluster_pagerank_infomap.png')
 
 
 get_clusters(graph, centrality_betweenness(), group_infomap()) %>%
-  plot_clusters('betweenness', 'infomap', 1:8) %>%
+  plot_clusters('betweenness', 'infomap', 1:9) %>%
   plot_save(filename = 'plots/clusters_betweeness_infomap.png')
 
 get_clusters(graph, centrality_closeness(), group_infomap()) %>%
