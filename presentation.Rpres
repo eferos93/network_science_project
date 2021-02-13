@@ -1,3 +1,8 @@
+<style>
+body {
+    overflow: scroll;
+}
+</style>
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo =FALSE, cache = FALSE, message = FALSE,
                       warning = FALSE, fig.align = 'center')
@@ -20,13 +25,21 @@ Table of Content
 - Conclusions
 - References
 
+Introduction
+========================================================
+
+- Programming languages evolved with a really fast pace over the decades
+- A study [1] showed that their evolution is uneven, as opposed to biological systems, and related to technological advances
+- With this project we aim to answer some questions by using Network Science 
+
+
 Data
 ========================================================
 
 - The [dataset](https://royalsocietypublishing.org/action/downloadSupplement?doi=10.1098%2Frsif.2015.0249&file=rsif20150249supp1.pdf) can be found in the [ICON](https://icon.colorado.edu/#!/) website
 - It represents a directed graph, which describes the influences between the programming languages released between 1952 and 2010
 - It has 395 nodes and 762 edges
-- It is not connected: there is 1 main weak component, other 5 weak components and 29 isolated nodes
+- It is not connected: there are 6 weak components and 29 isolated nodes
 - The semantic is the following:
 Let $u, v \in V$ two programming languages (nodes) and if $\exists (u, v) \in E$ then this means that the programming language
 $u$ is influenced by $v$
@@ -123,31 +136,26 @@ Network Analysis (3)
 ## Community detection
 - In order to tackle the third objective of this project, community detection algorithms were used
 - The aim is to check if you can identify clusters that contain programming languages of the same/similar paradigm
-- Before analysing the network, isolated nodes were removed as well as nodes with a low centrality
-- Unfortunately, in igraph the modularity is implemented only for undirected graphs
-    + In fact, hierarchical methods were not able to provide meaningful clusters
-    + The algorithm that yield the best results is the infomap
+- Before analysing the network, isolated nodes were removed
+- Unfortunately, in `igraph` the modularity is implemented only for undirected graphs
+    + One possibility is to transform all the edges to undirected, but we would lose some information [2]
+    + There are a lot of techniques to deal directed graphs, one of these is the information-theoretic one [2]
+    + In fact, the `infomap` algorithm yielded good results
     
     
 =======================================================
 ```{r}
-knitr::include_graphics('plots/cluster_pagerank_infomap.png')
+knitr::include_graphics('plots/communities.png')
 ```
 
-=======================================================
-```{r}
-knitr::include_graphics('plots/clusters_betweeness_infomap.png')
-```
-
-=======================================================
-```{r}
-knitr::include_graphics('plots/clusters_closeness_infomap.png')
-```
 
 Conclusions
 =======================================================
-- 
+- We can distinguish two types of influence, the *direct* and *historical*
+- It is possible to capture communities that matches with programming paradigms
 
 References
 =======================================================
 
+- [1] Valverde S, Solé RV. 2015 Punctuated equilibrium in the large-scale evolution of programming languages. J. R. Soc. Interface 12: 20150249. http://dx.doi.org/10.1098/rsif.2015.0249
+- [2] Malliaros, Fragkiskos & Vazirgiannis, Michalis. (2013). Clustering and Community Detection in Directed Networks: A Survey. Physics Reports. 533. 10.1016/j.physrep.2013.08.002. 

@@ -45,7 +45,7 @@ plot_most_influent_languages <- function (graph_with_centraility, how_many = 10,
     ggplot(aes(x = reorder(as.factor(name), -influence), y = influence)) +
     geom_bar(stat = 'identity', fill = 'blue4') +
     labs(
-      title = 'Top ten most influential programming languages',
+      title = 'Top ten most influenced programming languages',
       subtitle = paste('Centrality metric used:', centrality_metric),
       x = '',
       y = 'Influence'
@@ -71,30 +71,23 @@ subgraph_of_programming_language <- function (graph, programming_language,
     theme_void()
 }
 
-get_clusters <- function (graph, centrality_function, clustering_function) {
-  graph_no_isolated_nodes <- graph %>%
-    mutate(influence = centrality_function) %>%
-    filter(!node_is_isolated()) %>%
-    filter(influence > 0)
-
-  clustered <- graph_no_isolated_nodes %>%
-    mutate(group = clustering_function %>% as.factor())
-  return(clustered)
+get_clusters <- function (graph, clustering_function) {
+  graph %>% filter(!node_is_isolated()) %>%  mutate(group = clustering_function %>% as.factor())
 }
-plot_clusters <-  function(clustered, centrality_function_name, clustering_fuction_name, groups = NULL) {
+
+plot_clusters <-  function(clustered, clustering_fuction_name, groups = NULL) {
   if(!is.null(groups)) {
     clustered <- clustered %>% filter(group %in% groups)
   }
   clustered %>%
-    ggraph(layout = 'fr') +
+    ggraph(layout = 'circle') +
     geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
     geom_node_point(aes(colour = group), show.legend = FALSE) +
     geom_node_text(aes(label = name), repel = TRUE, show.legend = FALSE, colour = 'black', family = 'serif') +
     facet_nodes(~group) +
     labs(
       title = 'Communities',
-      subtitle = paste0('Centrality metric used to filter nodes: ', centrality_function_name,
-                        '. Clustering algorithm used: ', clustering_fuction_name)
+      subtitle = paste('Clustering algorithm used:', clustering_fuction_name)
     ) +
     theme_graph(foreground = 'steelblue', fg_text_colour = 'white')
 }
@@ -166,23 +159,15 @@ plot_centrality(graph_edge_betweenness, centrality_metric = 'betweenness') %>%
 plot_most_influent_languages(graph_edge_betweenness, centrality_metric = 'betweenness') %>%
   plot_save(filename = 'plots/hist_betweenness.png')
 
-graph_influence_degree <- get_centrality(graph, centrality_degree(mode = 'out'))
-plot_centrality(graph_influence_degree, centrality_metric = 'out-degree') %>%
+graph_influenced_degree <- get_centrality(graph, centrality_degree(mode = 'out'))
+plot_centrality(graph_influenced_degree, centrality_metric = 'out-degree') %>%
   plot_save(filename = 'plots/degree_out.png')
-plot_most_influent_languages(graph_influence_degree, centrality_metric = 'out-degree') %>%
+plot_most_influent_languages(graph_influenced_degree, centrality_metric = 'out-degree') %>%
   plot_save(filename = 'plots/hist_degree_out.png')
 #---------------------------------------------------------------------------------------------
 
 # Clustering
-get_clusters(graph, centrality_pagerank(), group_infomap()) %>%
-  plot_clusters('pagerank', 'infomap', 1:9) %>%
-  plot_save(filename = 'plots/cluster_pagerank_infomap.png')
-
-
-get_clusters(graph, centrality_betweenness(), group_infomap()) %>%
-  plot_clusters('betweenness', 'infomap', 1:9) %>%
-  plot_save(filename = 'plots/clusters_betweeness_infomap.png')
-
-get_clusters(graph, centrality_closeness(), group_infomap()) %>%
-  plot_clusters('closeness', 'infomap', 1:4) %>%
-  plot_save(filename = 'plots/clusters_closeness_infomap.png')
+graph %>%
+  get_clusters(group_infomap()) %>%
+  plot_clusters('infomap', 1:13) %>% 
+  plot_save(height = 5000, filename = 'plots/communities.png')
