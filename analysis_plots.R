@@ -153,12 +153,6 @@ plot_centrality(graph_pagerank, centrality_metric = 'pagerank') %>%
 plot_most_influent_languages(graph_pagerank, centrality_metric = 'pagerank') %>%
   plot_save(filename = 'plots/hist_pagerank.png')
 
-graph_edge_betweenness <- get_centrality(graph, centrality_betweenness())
-plot_centrality(graph_edge_betweenness, centrality_metric = 'betweenness') %>%
-  plot_save(filename = 'plots/betweenness.png')
-plot_most_influent_languages(graph_edge_betweenness, centrality_metric = 'betweenness') %>%
-  plot_save(filename = 'plots/hist_betweenness.png')
-
 graph_influenced_degree <- get_centrality(graph, centrality_degree(mode = 'out'))
 plot_centrality(graph_influenced_degree, centrality_metric = 'out-degree') %>%
   plot_save(filename = 'plots/degree_out.png')

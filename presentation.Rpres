@@ -38,11 +38,10 @@ Data
 
 - The [dataset](https://royalsocietypublishing.org/action/downloadSupplement?doi=10.1098%2Frsif.2015.0249&file=rsif20150249supp1.pdf) can be found in the [ICON](https://icon.colorado.edu/#!/) website
 - It represents a directed graph, which describes the influences between the programming languages released between 1952 and 2010
+- The semantic is the following:
+    + let $u, v \in V$ two programming languages (nodes) and if $\exists (u, v) \in E$ then this means that the programming language $u$ is influenced by $v$
 - It has 395 nodes and 762 edges
 - It is not connected: there are 6 weak components and 29 isolated nodes
-- The semantic is the following:
-Let $u, v \in V$ two programming languages (nodes) and if $\exists (u, v) \in E$ then this means that the programming language
-$u$ is influenced by $v$
 
 
 =======================================================
@@ -103,17 +102,6 @@ knitr::include_graphics('plots/pagerank.png')
 knitr::include_graphics('plots/hist_pagerank.png')
 ```
 
-
-=======================================================
-```{r}
-knitr::include_graphics('plots/betweenness.png')
-```
-
-
-=======================================================
-```{r}
-knitr::include_graphics('plots/hist_betweenness.png')
-```
 
 Network Analysis (2)
 =======================================================
