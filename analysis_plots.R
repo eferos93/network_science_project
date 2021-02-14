@@ -53,24 +53,6 @@ plot_most_influent_languages <- function (graph_with_centraility, how_many = 10,
     theme_classic()
 }
 
-subgraph_of_programming_language <- function (graph, programming_language,
-                                              selected_mode = 'all') {
-  subgraph <- graph %>%
-    convert(to_bfs_tree,
-            which(.N()$name == programming_language), mode = selected_mode) %>%
-    filter(!node_is_isolated())
-
-  subgraph %>%
-    ggraph(layout = 'fr', circular = TRUE) +
-    geom_edge_link(aes(alpha = stat(index)), show.legend = FALSE, edge_colour = 'grey66') +
-    geom_node_point(aes(size = influence), show.legend = FALSE) +
-    geom_node_text(aes(filter = name != programming_language, label = name),
-                   repel = TRUE, show.legend = FALSE, colour = 'red', family = 'serif') +
-    geom_node_text(aes(filter = name == programming_language, label = name),
-                   colour = 'green', family = 'serif', repel = TRUE, show.legend = FALSE) +
-    theme_void()
-}
-
 get_clusters <- function (graph, clustering_function) {
   graph %>% filter(!node_is_isolated()) %>%  mutate(group = clustering_function %>% as.factor())
 }
