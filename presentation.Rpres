@@ -64,7 +64,7 @@ Network Analysis
 
 ## Most influential programming languages
 - In order to evaluate which are the most influential and influenced programming languages, we will use centrality metrics
-- The metrics shown for the first case are: in-degree, in-closeness, pagerank and betweenness
+- The metrics shown for the first case are: in-degree, in-closeness, pagerank
 
 
 ========================================================
